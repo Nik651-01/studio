@@ -16,6 +16,7 @@ import {
   reasonAboutWeatherAlertRelevanceTool,
 } from '../tools/app-tools';
 import { searchMyDocumentsTool } from '../tools/document-search-tool';
+import { defineMessage } from 'genkit';
 
 const AssistantChatInputSchema = z.object({
   query: z.string().describe("The user's query or message."),
@@ -91,7 +92,8 @@ const assistantChatFlow = ai.defineFlow(
   },
   async input => {
     const { output } = await ai.generate({
-      prompt: prompt.render(input),
+      prompt: prompt,
+      history: [defineMessage({role: 'user', content: [{text: input.query}]})],
       output: { schema: prompt.config.output?.schema },
       tools: prompt.config.tools,
     });
