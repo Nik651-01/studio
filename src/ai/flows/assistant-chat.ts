@@ -16,7 +16,6 @@ import {
   reasonAboutWeatherAlertRelevanceTool,
 } from '../tools/app-tools';
 import { searchMyDocumentsTool } from '../tools/document-search-tool';
-import { defineMessage } from 'genkit';
 
 const AssistantChatInputSchema = z.object({
   query: z.string().describe("The user's query or message."),
@@ -72,7 +71,7 @@ You have access to a number of tools to help answer questions. Use them when app
 - If the user asks about market prices, use the getMarketPricesTool. You can ask for a state if needed.
 - If the user asks if a weather alert is important, use the reasonAboutWeatherAlertRelevanceTool. You may need to ask for the alert details and their current crops.
 - If the user asks a question about specific farming techniques, pest control, or information that might be in their documents (like a PDF), use the searchMyDocumentsTool.
-- If the user asks for information about a specific area of their farm (e.g., "my north field"), use the getGeofenceDataTool to retrieve soil and land use data.
+- If the user asks for information about a specific area of their farm (e.g., "my north field"), use the getGeofenceDataTool to retrieve soil and land use data for that area.
 `,
   prompt: `User's question: {{{query}}}
   {{#if location}}
@@ -91,7 +90,12 @@ const assistantChatFlow = ai.defineFlow(
     outputSchema: AssistantChatOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const { output } = await ai.generate({
+      prompt: prompt,
+      input: input,
+      output: { schema: prompt.config.output?.schema },
+      tools: prompt.config.tools,
+    });
     return output!;
   }
 );
