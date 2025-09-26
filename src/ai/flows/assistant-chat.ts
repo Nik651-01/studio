@@ -91,12 +91,7 @@ const assistantChatFlow = ai.defineFlow(
     outputSchema: AssistantChatOutputSchema,
   },
   async input => {
-    const { output } = await ai.generate({
-      prompt: prompt,
-      history: [defineMessage({role: 'user', content: [{text: input.query}]})],
-      output: { schema: prompt.config.output?.schema },
-      tools: prompt.config.tools,
-    });
+    const {output} = await prompt(input);
     return output!;
   }
 );
