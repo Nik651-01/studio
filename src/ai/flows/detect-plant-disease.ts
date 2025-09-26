@@ -65,8 +65,8 @@ const detectPlantDiseaseFlow = ai.defineFlow(
   async input => {
     const { output } = await ai.generate({
       model: googleAI('gemini-pro-vision'),
-      prompt: prompt.render(input),
-      output: { schema: prompt.config.output?.schema },
+      prompt: prompt,
+      input: input,
     });
     return output!;
   }
