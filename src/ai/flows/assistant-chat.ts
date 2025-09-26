@@ -91,10 +91,7 @@ const assistantChatFlow = ai.defineFlow(
     outputSchema: AssistantChatOutputSchema,
   },
   async input => {
-    const { output } = await ai.generate({
-      prompt: prompt,
-      input: input,
-    });
+    const { output } = await prompt(input);
     return output!;
   }
 );
