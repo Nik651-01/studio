@@ -90,7 +90,12 @@ const assistantChatFlow = ai.defineFlow(
     outputSchema: AssistantChatOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const { output } = await ai.generate({
+      prompt: prompt.render(input),
+      model: ai.registry.lookupModel('googleai/gemini-pro')!,
+      output: { schema: prompt.config.output?.schema },
+      tools: prompt.config.tools,
+    });
     return output!;
   }
 );
