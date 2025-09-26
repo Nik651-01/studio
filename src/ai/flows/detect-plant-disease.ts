@@ -43,7 +43,7 @@ const prompt = ai.definePrompt({
   name: 'detectPlantDiseasePrompt',
   input: {schema: DetectPlantDiseaseInputSchema},
   output: {schema: DetectPlantDiseaseOutputSchema},
-  model: 'googleai/gemini-pro-vision',
+  model: 'gemini-1.5-flash-preview',
   prompt: `You are an expert botanist and plant pathologist. You will be given a photo of a plant.
 
 Your tasks are:
