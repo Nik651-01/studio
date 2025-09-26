@@ -7,7 +7,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {GenerateRequest} from 'genkit';
 import {z} from 'zod';
 import {
   analyzeSoilHealthTool,
@@ -43,7 +42,21 @@ export async function chat(
   return assistantChatFlow(input);
 }
 
-const systemPrompt = `You are KrishiMitra, a friendly and knowledgeable AI assistant for an Indian farming application.
+const prompt = ai.definePrompt({
+    name: 'assistantChatPrompt',
+    model: 'gemini-1.5-flash-preview',
+    input: { schema: AssistantChatInputSchema },
+    output: { schema: AssistantChatOutputSchema },
+    tools: [
+        getWeatherForecastTool,
+        analyzeSoilHealthTool,
+        getPersonalizedCropRecommendationsTool,
+        getMarketPricesTool,
+        reasonAboutWeatherAlertRelevanceTool,
+        searchMyDocumentsTool,
+        getGeofenceDataTool,
+    ],
+    system: `You are KrishiMitra, a friendly and knowledgeable AI assistant for an Indian farming application.
 Your goal is to provide helpful and encouraging answers to farmers' questions.
 You MUST respond in the language specified by the 'language' input field. The available languages are: en (English), hi (Hindi), nag (Nagpuri), sat (Santhali), kru (Kurukh), mun (Mundari). If no language is specified, default to English.
 
@@ -60,7 +73,17 @@ You have access to a number of tools to help answer questions. Use them when app
 - If the user asks about market prices, use the getMarketPricesTool. You can ask for a state if needed.
 - If the user asks if a weather alert is important, use the reasonAboutWeatherAlertRelevanceTool. You may need to ask for the alert details and their current crops.
 - If the user asks a question about specific farming techniques, pest control, or information that might be in their documents (like a PDF), use the searchMyDocumentsTool.
-- If the user asks for information about a specific area of their farm (e.g., "my north field"), use the getGeofenceDataTool to retrieve soil and land use data for that area.`;
+- If the user asks for information about a specific area of their farm (e.g., "my north field"), use the getGeofenceDataTool to retrieve soil and land use data for that area.
+
+User's question: {{{query}}}
+{{#if location}}
+User's current location: Latitude {{location.latitude}}, Longitude {{location.longitude}}
+{{/if}}
+{{#if language}}
+Language for response: {{language}}
+{{/if}}
+`
+});
 
 
 const assistantChatFlow = ai.defineFlow(
@@ -70,45 +93,7 @@ const assistantChatFlow = ai.defineFlow(
     outputSchema: AssistantChatOutputSchema,
   },
   async input => {
-    
-    let userMessage = `User's question: ${input.query}\n`;
-    if (input.location) {
-      userMessage += `User's current location: Latitude ${input.location.latitude}, Longitude ${input.location.longitude}\n`;
-    }
-    if (input.language) {
-      userMessage += `Language for response: ${input.language}\n`;
-    }
-
-    const request: GenerateRequest = {
-        model: 'gemini-1.5-flash-preview',
-        messages: [
-            { role: 'system', content: [{ text: systemPrompt }] },
-            { role: 'user', content: [{ text: userMessage }] },
-        ],
-        tools: [
-            getWeatherForecastTool,
-            analyzeSoilHealthTool,
-            getPersonalizedCropRecommendationsTool,
-            getMarketPricesTool,
-            reasonAboutWeatherAlertRelevanceTool,
-            searchMyDocumentsTool,
-            getGeofenceDataTool,
-        ],
-        output: {
-            schema: AssistantChatOutputSchema,
-        }
-    };
-    
-    const response = await ai.generate(request);
-
-    const text = response.text;
-    if (!text) {
-        // This can happen if the model decides to call a tool.
-        // For this simplified assistant, we'll just ask the user to be more specific.
-        // A more advanced implementation would handle the tool calls.
-        return { response: "I'm sorry, I need more information to answer that. Could you be more specific?" };
-    }
-    
-    return { response: text };
+    const {output} = await prompt(input);
+    return output!;
   }
 );
