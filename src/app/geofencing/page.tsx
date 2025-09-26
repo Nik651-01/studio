@@ -4,7 +4,7 @@ import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { List, ListItem } from "@/components/ui/list";
-import { MapPin, PlusCircle, Edit, Trash2, Loader2 } from "lucide-react";
+import { MapPin, PlusCircle, Edit, Trash2, Loader2, Download } from "lucide-react";
 import { MapLoader } from "@/components/geofencing/map-loader";
 import { useTranslation } from "@/hooks/use-translation";
 import { getGeofenceData } from "@/ai/flows/get-geofence-data";
@@ -77,6 +77,24 @@ export default function GeofencingPage() {
         setPolygonArea(null);
     }, []);
 
+    const handleDownload = () => {
+        if (!geofenceData) return;
+
+        const dataToDownload = {
+            selectedAreaAcres: polygonArea,
+            ...geofenceData,
+        };
+
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dataToDownload, null, 2));
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", dataStr);
+        downloadAnchorNode.setAttribute("download", "geofence_report.json");
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+    };
+
+
     return (
         <div className="space-y-6">
             <div className="flex justify-between items-start">
@@ -145,6 +163,14 @@ export default function GeofencingPage() {
                     </CardContent>
                 </Card>
             </div>
+             {geofenceData && (geofenceData.lulcData || geofenceData.soilData) && (
+                <div className="text-center">
+                    <Button onClick={handleDownload} size="lg">
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Report
+                    </Button>
+                </div>
+            )}
 
             <Card>
                 <CardHeader>
