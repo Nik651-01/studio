@@ -80,6 +80,7 @@ const assistantChatFlow = ai.defineFlow(
     }
 
     const request: GenerateRequest = {
+        model: 'gemini-1.5-flash-preview',
         messages: [
             { role: 'system', content: [{ text: systemPrompt }] },
             { role: 'user', content: [{ text: userMessage }] },
