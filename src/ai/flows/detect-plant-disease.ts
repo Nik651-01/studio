@@ -41,6 +41,7 @@ export async function detectPlantDisease(input: DetectPlantDiseaseInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'detectPlantDiseasePrompt',
+  model: googleAI('gemini-pro-vision'),
   input: {schema: DetectPlantDiseaseInputSchema},
   output: {schema: DetectPlantDiseaseOutputSchema},
   prompt: `You are an expert botanist and plant pathologist. You will be given a photo of a plant.
