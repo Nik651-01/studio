@@ -10,6 +10,7 @@ import { Separator } from '@/components/ui/separator';
 import { Tractor, LogIn, UserCheck } from 'lucide-react';
 import { useAuthStore } from '@/lib/auth-store';
 import { useTranslation } from '@/hooks/use-translation';
+import { QRCodeDisplay } from '@/components/qrcode/qr-code';
 
 export default function LoginPage() {
     const { login, loginAsGuest } = useAuthStore();
@@ -27,6 +28,9 @@ export default function LoginPage() {
 
     return (
         <div className="flex items-center justify-center min-h-screen bg-background p-4">
+             <div className="absolute top-4 right-4">
+                <QRCodeDisplay />
+            </div>
             <Card className="w-full max-w-sm">
                 <CardHeader className="text-center">
                     <div className="flex justify-center items-center gap-2 mb-4">
