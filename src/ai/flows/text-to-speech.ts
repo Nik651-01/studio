@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview A flow for converting text to speech using a Genkit model.
@@ -61,7 +62,7 @@ const textToSpeechFlow = ai.defineFlow(
   },
   async ({text}) => {
     const {media} = await ai.generate({
-      model: googleAI.model('gemini-2.5-flash-preview-tts'),
+      model: googleAI.model('gemini-1.5-flash-001-tts-001'),
       config: {
         responseModalities: ['AUDIO'],
         speechConfig: {

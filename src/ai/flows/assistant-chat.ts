@@ -44,7 +44,7 @@ export async function chat(
 
 const prompt = ai.definePrompt({
     name: 'assistantChatPrompt',
-    model: 'gemini-1.5-flash-preview',
+    model: 'gemini-1.5-flash',
     input: { schema: AssistantChatInputSchema },
     output: { schema: AssistantChatOutputSchema },
     tools: [
